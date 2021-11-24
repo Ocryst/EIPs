@@ -1,27 +1,20 @@
 ---
 eip: <to be assigned>
-title: <The EIP title is a few words, not a complete sentence>
-description: <Description is one full (short) sentence>
-author: <a comma separated list of the author's or authors' name + GitHub username (in parenthesis), or name and email (in angle brackets).  Example, FirstName LastName (@GitHubUsername), FirstName LastName <foo@bar.com>, FirstName (@GitHubUsername) and GitHubUsername (@GitHubUsername)>
+title: A Token Standard
+description: A Vanilla Fungible Token Standard for Dao Equity Contracts
+author: Doe, (@Ocryst), Liam, (@alawik>)
 discussions-to: <URL>
 status: Draft
-type: <Standards Track, Meta, or Informational>
-category (*only required for Standards Track): <Core, Networking, Interface, or ERC>
-created: <date created on, in ISO 8601 (yyyy-mm-dd) format>
-requires (*optional): <EIP number(s)>
+type: Standards Track
+category (*only required for Standards Track): ERC
+created: 2021-11-24
 ---
 
-This is the suggested template for new EIPs.
-
-Note that an EIP number will be assigned by an editor. When opening a pull request to submit your EIP, please use an abbreviated title in the filename, `eip-draft_title_abbrev.md`.
-
-The title should be 44 characters or less. It should not repeat the EIP number in title, irrespective of the category. 
-
 ## Abstract
-Abstract is a multi-sentence (short paragraph) technical summary. This should be a very terse and human-readable version of the specification section. Someone should be able to read only the abstract to get the gist of what this specification does.
-
+The following standard allows for the implementation of a standard API for tokens within smart contracts to utilize DAO equity options contracts. This utilizes the ERC20 token functionality and adds additional functions proposed as standard.
+  
 ## Motivation
-The motivation section should describe the "why" of this EIP. What problem does it solve? Why should someone want to implement this standard? What benefit does it provide to the Ethereum ecosystem? What use cases does this EIP address?
+To standardize the use of DAO equity contracts in community directed team incentives. The treasury model popularized by olympusDao allows a dao to control its treasury and governance in unique ways. Through this token standard a dao with access to treasury and governance can integrate equity contracts to pay developers in a way that is controlled and aligned to community interest through equity in the protocol.
 
 ## Specification
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
