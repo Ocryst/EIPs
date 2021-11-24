@@ -11,7 +11,7 @@ created: 2021-11-24
 ---
 
 ## Abstract
-The following standard allows for the implementation of a standard API for tokens within smart contracts to utilize DAO equity options contracts. This utilizes the ERC20 token functionality and adds additional functions proposed as standard.
+The following standard allows for the implementation of a standard API for tokens within smart contracts to utilize DAO equity denominated options contracts. This utilizes the ERC20 token functionality and adds additional functions proposed as standard.
   
 ## Motivation
 To standardize the use of DAO equity contracts in community directed team incentives. The treasury model popularized by olympusDao allows a dao to control its treasury and governance in unique ways. Through this token standard a dao with access to treasury and governance can integrate equity contracts to pay developers in a way that is controlled and aligned to community interest through equity in the protocol.
@@ -111,8 +111,88 @@ Here is an example of `payment` function implementation :
     }
 ```
   
+#### started
 
+The started function when called will return the block timestamp of start to check if the equity contract has started.
+                                                
+Here is an example of `started` function implementation : 
+  
+```
+    function started() public view returns (bool) {
+        if (startTime == uint256(0)) return false;
+        return block.timestamp > startTime ? true : false;
+    }
+```
+  
+#### expired
 
+The expired function when called will return the block timestamp of start to check if the equity contract has expired.
+                                                
+Here is an example of `expired` function implementation : 
+  
+```
+    function expired() public view returns (bool) {
+        return block.timestamp < expiryTime ? true : false;
+    }
+```
+
+#### exercise
+
+The eexercise function checks the balance of the address then takes the returned values from `transferFrom`, `underwrite`, and `transfer` before emitting and `exercised` event to the blockchain as true.
+                                                
+Here is an example of `exercise` function implementation : 
+  
+```
+    function exercise(uint256 amount) public returns (bool) {
+        require(balanceOf[msg.sender] >= amount);
+        require(IERC20(principle).balanceOf(msg.sender) >= payment(amount));
+
+        balanceOf[msg.sender] -= amount;
+        
+        // This is safe because the sum of all user
+        // exercised can't exceed type(uint256).max!
+        unchecked {
+            exercised[msg.sender] += amount;
+        }
+        
+        IERC20(principle).transferFrom(msg.sender, writer, payment(amount));
+        IWriter(writer).underwrite(amount);
+        IERC20(principle).transfer(msg.sender, amount);
+
+        emit Exercised(msg.sender, amount);
+        return true;
+    }
+```       
+  
+#### exerciseFrom
+
+The exerciseFrom function checks the allowance of the sender and returnsed a bool while emitting an `exercised` event to the blockchain.
+                                                
+Here is an example of `exerciseFrom` function implementation : 
+  
+```
+    function exerciseFrom(address from, uint256 amount) public returns (bool) {
+        if (allowance[from][msg.sender] != type(uint256).max) {
+            allowance[from][msg.sender] -= amount;
+        }
+
+        balanceOf[from] -= amount;
+
+        // This is safe because the sum of all user
+        // exercised can't exceed type(uint256).max!
+        unchecked {
+            exercised[from] += amount;
+        }
+
+        emit Exercised(from, amount);
+        return true;
+    }
+```  
+  
+
+  
+  
+                                           
 ## Rationale
 The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages.
 
