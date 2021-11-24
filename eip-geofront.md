@@ -17,6 +17,75 @@ The following standard allows for the implementation of a standard API for token
 To standardize the use of DAO equity contracts in community directed team incentives. The treasury model popularized by olympusDao allows a dao to control its treasury and governance in unique ways. Through this token standard a dao with access to treasury and governance can integrate equity contracts to pay developers in a way that is controlled and aligned to community interest through equity in the protocol.
 
 ## Specification
+This standard is backwards compatible with ERC-20, therefore, all ERC-20 functions can be called on an ERC-3643 token, the interfaces being compatible. But the functions are not implemented in the same way as a classic ERC-20 as This proposed standard is a allows treasury integration by a dao.
+
+### Main functions
+  
+#### write
+
+To be able to qualify for interaction with a dao equity contract as desribed in this proposal an address must by whitelisted by the dao initiating the contract.
+
+Here is an example of `write` function implementation : 
+  
+```
+    function write(
+        address[] memory _recipients,
+        uint256[] memory _amounts
+    ) public returns (bool) {
+        require(msg.sender == writer);
+
+        require(_amounts.length > 0 && _recipients.length > 0);
+        for (uint i = 0; i < _recipients.length; i++) {
+            address recipient = _recipients[i];
+            require(recipient != address(0));
+            balanceOf[recipient] = _amounts[i];
+            circulatingSupply +=  _amounts[i];
+        }
+    }
+```
+
+#### begin
+
+To be able to perform a write to initiate the contract it must be called by the writer, theoretically a dao contract. This returns a bool which emits a start time for the contract. The initiation of time is important to setting deadlines and calculating bonus rewards.
+
+Here is an example of `Begin` function implementation : 
+  
+```
+    function begin() public returns (bool) {
+        require(msg.sender == writer);
+        startTime = block.timestamp;
+        emit Start(startTime);
+        return true;
+    }
+```
+  
+#### redeemable
+
+The redeemable function checks to determine if the contract is redeemable. The date range of redeemability being set by the begin function.
+
+Here is an example of `Begin` function implementation : 
+  
+```
+    function redeemable(address account) public view returns (uint256) {
+        if (started()) {
+            return balanceOf[msg.sender].div(10000).mul(multiplier());
+        } else return uint256(0);
+    }
+```
+                                                
+#### bonusTerms
+
+In order to incentivise work paid for via equity contracts there is an optional bonus system integrated via the bonusTerms function. The function checks the work completion date and pays a bonus for early completion.
+
+Here is an example of `bonusTerms` function implementation : 
+  
+```
+    function bonusTerms() public view returns (uint256) {
+        return expiryTime.sub(block.timestamp).div(bonusTerm);
+    }
+```
+  
+
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
 
 The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).
