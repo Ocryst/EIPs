@@ -189,24 +189,45 @@ Here is an example of `exerciseFrom` function implementation :
     }
 ```  
   
+#### burn
 
+The burn function checks the amount on the balance and returns a bool while emitting a transfer to a burn wallet for the specified amount.
+                                                
+Here is an example of `exerciseFrom` function implementation : 
   
-  
+```
+    function exerciseFrom(address from, uint256 amount) public returns (bool) {
+        if (allowance[from][msg.sender] != type(uint256).max) {
+            allowance[from][msg.sender] -= amount;
+        }
+
+        balanceOf[from] -= amount;
+
+        // This is safe because the sum of all user
+        // exercised can't exceed type(uint256).max!
+        unchecked {
+            exercised[from] += amount;
+        }
+
+        emit Exercised(from, amount);
+        return true;
+    }
+```  
                                            
 ## Rationale
-The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages.
 
-## Backwards Compatibility
-All EIPs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The EIP must explain how the author proposes to deal with these incompatibilities. EIP submissions without a sufficient backwards compatibility treatise may be rejected outright.
+### Protocol Aligned Equity Driven Incentives
+The proposed token standard provides for a universal api for which protocols can build on and integrate options contracts denominated in token equity for work done for the protocol. This allows for governance structures to determine reward structures for development or outsourcing of jobs by paying for work with equity in the protocol.
+  
+### Elimination of Misaligned Incentives
+Protocol incentives for development done are often misaligned against holders. Resulting in dilution of holdings, and diminished project runway as develpment incentives are often structured from a fixed pool of payment reserves and utilizing various vesting structures. This standard allows for more sustainable development as governed by the protocol itself.
 
 ## Test Cases
-Test cases for an implementation are mandatory for EIPs that are affecting consensus changes.  If the test suite is too large to reasonably be included inline, then consider adding it as one or more files in `../assets/eip-####/`.
+The standard is currently implemented and tested on the [EvangelionDAO repository](https://github.com/xenon-capital/evangelion).
 
-## Reference Implementation
-An optional section that contains a reference/example implementation that people can use to assist in understanding or implementing this specification.  If the implementation is too large to reasonably be included inline, then consider adding it as one or more files in `../assets/eip-####/`.
 
 ## Security Considerations
-All EIPs must contain a section that discusses the security implications/considerations relevant to the proposed change. Include information that might be important for security discussions, surfaces risks and can be used throughout the life cycle of the proposal. E.g. include security-relevant design decisions, concerns, important discussions, implementation-specific guidance and pitfalls, an outline of threats and risks and how they are being addressed. EIP submissions missing the "Security Considerations" section will be rejected. An EIP cannot proceed to status "Final" without a Security Considerations discussion deemed sufficient by the reviewers.
+Contracts are not currently audited.
 
 ## Copyright
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
