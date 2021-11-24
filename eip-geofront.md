@@ -84,11 +84,34 @@ Here is an example of `bonusTerms` function implementation :
         return expiryTime.sub(block.timestamp).div(bonusTerm);
     }
 ```
+                                                
+#### multiplier
+
+A multiplier can be set and added to the bonusTerm payments
+                                                
+Here is an example of `bonusTerms` function implementation : 
+  
+```
+    function multiplier() public view returns (uint256) {
+        uint128 boom = uint128(bonusRate) ** uint128(bonusTerms());
+        require(boom < type(uint128).max);
+        return uint256(boom);
+    }
+```
+  .
+#### payment
+
+The payment functions similarly to an options contract by multiplying against the strike.
+                                                
+Here is an example of `payment` function implementation : 
+  
+```
+    function payment(uint256 amount) public view returns (uint256) {
+        return amount.mul(strike);
+    }
+```
   
 
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in RFC 2119.
-
-The technical specification should describe the syntax and semantics of any new feature. The specification should be detailed enough to allow competing, interoperable implementations for any of the current Ethereum platforms (go-ethereum, parity, cpp-ethereum, ethereumj, ethereumjs, and [others](https://github.com/ethereum/wiki/wiki/Clients)).
 
 ## Rationale
 The rationale fleshes out the specification by describing what motivated the design and why particular design decisions were made. It should describe alternate designs that were considered and related work, e.g. how the feature is supported in other languages.
